@@ -1,23 +1,21 @@
-import java.util.HashMap;
-import java.util.Map;
-
 class Solution {
-    public int[] twoSum(int[] nums, int target) {
-        Map<Integer, Integer> map = new HashMap<>();
-        
-        for (int i = 0; i < nums.length; i++) {
-            int complement = target - nums[i];
-            
-            // Check if the needed number was already seen
-            if (map.containsKey(complement)) {
-                return new int[] { map.get(complement), i };
-            }
-            
-            // Store the current number and its index
-            map.put(nums[i], i);
+    public boolean isPalindrome(int x) {
+        // Negative numbers and numbers ending in 0 (except 0 itself) are never palindromes
+        if (x < 0 || (x % 10 == 0 && x != 0)) {
+            return false;
         }
         
-        return new int[] {}; // Fallback, though a solution is guaranteed
+        int reversedHalf = 0;
+        
+        // Reverse digits until we reach the middle of the number
+        while (x > reversedHalf) {
+            reversedHalf = reversedHalf * 10 + x % 10;
+            x /= 10;
+        }
+        
+        // Check equality for even-length (x == reversedHalf) 
+        // and odd-length numbers (x == reversedHalf / 10)
+        return x == reversedHalf || x == reversedHalf / 10;
     }
 }
 
