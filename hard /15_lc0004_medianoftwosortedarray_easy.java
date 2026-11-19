@@ -1,51 +1,43 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 class Solution {
-    public List<List<Integer>> threeSum(int[] nums) {
-        List<List<Integer>> result = new ArrayList<>();
-        // Sort the array to enable two pointers and easy duplicate skipping
-        Arrays.sort(nums);
-        
-        for (int i = 0; i < nums.length - 2; i++) {
-            // Since the array is sorted, no triplet can sum to 0 once nums[i] > 0
-            if (nums[i] > 0) {
-                break;
-            }
-            
-            // Skip duplicate values for the first element
-            if (i > 0 && nums[i] == nums[i - 1]) {
-                continue;
-            }
-            
-            int left = i + 1;
-            int right = nums.length - 1;
-            
-            while (left < right) {
-                int sum = nums[i] + nums[left] + nums[right];
-                
-                if (sum == 0) {
-                    result.add(Arrays.asList(nums[i], nums[left], nums[right]));
-                    
-                    // Skip duplicate values for the second and third elements
-                    while (left < right && nums[left] == nums[left + 1]) {
-                        left++;
-                    }
-                    while (left < right && nums[right] == nums[right - 1]) {
-                        right--;
-                    }
-                    
-                    left++;
-                    right--;
-                } else if (sum < 0) {
-                    left++;  // Need a larger sum
+    public double findMedianSortedArrays(int[] nums1, int[] nums2) {
+        // Always binary search the smaller array to ensure O(log(min(m, n))) time
+        if (nums1.length > nums2.length) {
+            return findMedianSortedArrays(nums2, nums1);
+        }
+
+        int m = nums1.length;
+        int n = nums2.length;
+        int low = 0;
+        int high = m;
+
+        while (low <= high) {
+            int partitionX = (low + high) / 2;
+            int partitionY = (m + n + 1) / 2 - partitionX;
+
+            // Handle edge cases where a partition is at index 0 or at the array's end
+            int maxLeftX = (partitionX == 0) ? Integer.MIN_VALUE : nums1[partitionX - 1];
+            int minRightX = (partitionX == m) ? Integer.MAX_VALUE : nums1[partitionX];
+
+            int maxLeftY = (partitionY == 0) ? Integer.MIN_VALUE : nums2[partitionY - 1];
+            int minRightY = (partitionY == n) ? Integer.MAX_VALUE : nums2[partitionY];
+
+            // Valid partition found: every element on the left <= every element on the right
+            if (maxLeftX <= minRightY && maxLeftY <= minRightX) {
+                if ((m + n) % 2 == 0) {
+                    return (Math.max(maxLeftX, maxLeftY) + Math.min(minRightX, minRightY)) / 2.0;
                 } else {
-                    right--; // Need a smaller sum
+                    return Math.max(maxLeftX, maxLeftY);
                 }
+            } else if (maxLeftX > minRightY) {
+                // Too far right in nums1; move partition left
+                high = partitionX - 1;
+            } else {
+                // Too far left in nums1; move partition right
+                low = partitionX + 1;
             }
         }
-        
-        return result;
+
+        throw new IllegalArgumentException("Input arrays are not sorted.");
     }
 }
+
